@@ -1,7 +1,7 @@
 const { FileInput , XHRUpload , GoldenRetriever } = Uppy;
 var uppy;
 
-var wikishootme = {
+var wikisoundme = {
 
 	sparql_url : 'https://query.wikidata.org/bigdata/namespace/wdq/sparql' ,
 	check_reason_no_image : false ,
@@ -187,7 +187,7 @@ var wikishootme = {
 	} ,
 	
 	createItemFromImage : function ( a ) {
-		var me = wikishootme ;
+		var me = wikisoundme ;
 		var image = $(a).attr ( 'image' ) ;
 		var image_pos = { lat:$(a).attr('lat') , lng:$(a).attr('lng') } ;
 
@@ -251,7 +251,7 @@ var wikishootme = {
 			
 			if ( entry.mode == 'commons' ) {
 				h += "<div class='popup_section'>" ;
-				h += "<a href='#' image='"+escattr(entry.image)+"' lat='"+entry.pos[0]+"' lng='"+entry.pos[1]+"' class='create_item_from_image' onclick='return wikishootme.createItemFromImage($(this));return false'>" + me.tt.t('create_wd_from_image') + "</a>" ;
+				h += "<a href='#' image='"+escattr(entry.image)+"' lat='"+entry.pos[0]+"' lng='"+entry.pos[1]+"' class='create_item_from_image' onclick='return wikisoundme.createItemFromImage($(this));return false'>" + me.tt.t('create_wd_from_image') + "</a>" ;
 				h += "</div>" ;
 			}
 			
@@ -267,7 +267,7 @@ var wikishootme = {
 		
 				h += "<div style='margin-top:15px'>" ;
 				h += "<form method='post' enctype='multipart/form-data' action='"+wsm_comm.api_v3+"' class='form form-inline' target='_blank'>" ;
-				h += '<label class="btn btn-primary btn-file">' + me.tt.t('upload_file') + ' <input name="file" type="file" accept="image/*;capture=camera" onchange="wikishootme.uploadFileHandler(this,event)" style="display: none;"></label>' ;
+				h += '<label class="btn btn-primary btn-file">' + me.tt.t('upload_file') + ' <input name="file" type="file" accept="image/*;capture=camera" onchange="wikisoundme.uploadFileHandler(this,event)" style="display: none;"></label>' ;
 				h += "<input type='hidden' name='action' value='"+me.upload_mode+"' />" ;
 				h += "<input type='hidden' name='q' value='"+entry.page+"' />" ;
 				h += "<input type='hidden' name='wpDestFile' value='" + escattr(entry.label) + ".jpg' />" ;
@@ -277,7 +277,7 @@ var wikishootme = {
 				h += "</div>" ;
 				
 				h += "<div class='add_image2item'>" ;
-				h += "<form class='form form-inline' onSubmit='return wikishootme.addImageToItemHandler($(this))'>" ;
+				h += "<form class='form form-inline' onSubmit='return wikisoundme.addImageToItemHandler($(this))'>" ;
 				h += "<input type='hidden' name='q' value='"+escattr(entry.page)+"' />" ;
 				h += "<input type='text' name='filename' placeholder='"+escattr(me.tt.t('commons_file_name'))+"' />" ;
 				h += "<input type='submit' value='"+escattr(me.tt.t('add2item'))+"' />" ;
@@ -309,9 +309,9 @@ var wikishootme = {
 			h += " | " ;
 			//if ( entry.commonscat == me.main_commons_category ) {
 			// THIS DOESN"T WORK CORRECTLY
-			//	h += "<a href='#' onclick='wikishootme.clear_commons_main_category()'>"+me.tt.t('remove_image_highlight')+"</a>" ;
+			//	h += "<a href='#' onclick='wikisoundme.clear_commons_main_category()'>"+me.tt.t('remove_image_highlight')+"</a>" ;
 			//} else {
-				h += "<a href='#' onclick='wikishootme.set_commons_main_category(\""+escattr(entry.commonscat)+"\")'>"+me.tt.t('highlight_images_from_category')+"</a>" ;
+				h += "<a href='#' onclick='wikisoundme.set_commons_main_category(\""+escattr(entry.commonscat)+"\")'>"+me.tt.t('highlight_images_from_category')+"</a>" ;
 			//}
 			h += "</div>" ;
 		}
@@ -319,7 +319,7 @@ var wikishootme = {
 		h += "<div class='popup_coords'><span class='coordinates'>" + entry.pos[0] + ", " + entry.pos[1] + "</span>" ;
 		h += " <a style='user-select:none' href='http://www.instantstreetview.com/@"+entry.pos[0]+","+entry.pos[1]+",0h,0p,1z' tt_title='streetview' target='_blank'>&#127968;</a>" ;
 		if ( wsm_comm.isLoggedIn() && typeof entry.mixnmatch == 'undefined' ) {
-			h += " [<a href='#' style='user-select:none' onclick='wikishootme.editCoordinates(this,\""+entry.page+"\","+entry.pos[0]+","+entry.pos[1]+");return false' title='edit coordinates'>e</a>]" ;
+			h += " [<a href='#' style='user-select:none' onclick='wikisoundme.editCoordinates(this,\""+entry.page+"\","+entry.pos[0]+","+entry.pos[1]+");return false' title='edit coordinates'>e</a>]" ;
 		}
 		h += "</div>" ;
 		
@@ -338,7 +338,7 @@ var wikishootme = {
 	} ,
 
 	editCoordinates : function ( a , q , lat , lon ) {
-		var me = wikishootme ;
+		var me = wikisoundme ;
 		var ret = prompt ( "Edit coordinates" , lat+'/'+lon ) ;
 		if ( ret == null ) return false ; // Cancel
 		if ( !ret.match ( /^\s*-?[0-9.]+\s*\/\s*-?[0-9.]+\s*$/ ) ) {
@@ -410,7 +410,7 @@ var wikishootme = {
 	} ,
 
 	uploadFileHandler : function ( o , event ) {
-		var me = wikishootme ;
+		var me = wikisoundme ;
 		var form = $(o).parents('form').get(0) ;
 
 		if ( me.upload_mode == 'uppy' ) {
@@ -532,7 +532,7 @@ var wikishootme = {
 			setTimeout ( function () { me.uploadNext() } , me.upload_delay ) ;
 
 			// Logging
-			$.getJSON ( 'https://tools.wmflabs.org/magnustools/logger.php?tool=wikishootme&method=file uploaded&callback=?' , function(j){} ) ;
+			$.getJSON ( 'https://tools.wmflabs.org/magnustools/logger.php?tool=wikisoundme&method=file uploaded&callback=?' , function(j){} ) ;
 		} ) ;
 
 		me.showUploadStatus() ;
@@ -799,7 +799,7 @@ var wikishootme = {
 			title += ' ' + flickr_id ;
 			title += '.jpg' ;
 			
-			var comment = 'Transferred from Flickr via [https://wikishootme.toolforge.org WikiShootMe] #wikishootme' ;
+			var comment = 'Transferred from Flickr via [https://wikisoundme.toolforge.org WikiSoundMe] #wikisoundme' ;
 		
 			me.uploadURL2Commons ( pic.url_best , title , w , comment , pic ) ;
 		
@@ -1191,7 +1191,7 @@ var wikishootme = {
 			
 			c.find('div.transfer2flickr').each ( function () { // Flickr transfer function
 				var div = $(this) ;
-				var html_do_upload = "<a href='#' onclick='wikishootme.transferFlickr2Commons(this,\""+div.attr('flickr_id')+"\");return false'>Transfer from Flickr to Commons</a>" ;
+				var html_do_upload = "<a href='#' onclick='wikisoundme.transferFlickr2Commons(this,\""+div.attr('flickr_id')+"\");return false'>Transfer from Flickr to Commons</a>" ;
 				if ( wsm_comm.oauth_uploader_login ) {
 					div.html ( html_do_upload ) ;
 					h = c.html() ;
@@ -1310,7 +1310,7 @@ var wikishootme = {
 	
 	setPositionFromQ : function ( q ) {
 		var me = this ;
-		var sparql = "#TOOL: WikiShootMe\n" ;
+		var sparql = "#TOOL: WikiSoundMe\n" ;
 		sparql += 'SELECT ?qc ?qcau { wd:'+q+' wdt:P625 ?qc OPTIONAL { wd:'+q+' wdt:P131 ?au . ?au wdt:P625 ?qcau } }'
 		$.get ( me.sparql_url , {
 			query:sparql
@@ -1442,7 +1442,7 @@ var wikishootme = {
 
 		var p131 = '' ;
 		var radius = 2 ;
-		var sparql = "#TOOL: WikiShootMe\n" ;
+		var sparql = "#TOOL: WikiSoundMe\n" ;
 		sparql += 'SELECT ?dist ?unit WHERE { ?place wdt:P131 ?unit .' ;
 		sparql += ' SERVICE wikibase:around { ?place wdt:P625 ?location . bd:serviceParam wikibase:center "Point('+lng+' '+lat+')"^^geo:wktLiteral . bd:serviceParam wikibase:radius "'+radius+'" . bd:serviceParam wikibase:distance ?dist } }' ;
 		sparql += ' ORDER BY ASC(?dist) LIMIT 50' ;
@@ -1519,7 +1519,7 @@ var wikishootme = {
 		if( window.FormData !== undefined ) me.upload_mode = 'upload_background' ;
 
 		// Logging
-		$.getJSON ( 'https://tools.wmflabs.org/magnustools/logger.php?tool=wikishootme&method=loaded&callback=?' , function(j){} ) ;
+		$.getJSON ( 'https://tools.wmflabs.org/magnustools/logger.php?tool=wikisoundme&method=loaded&callback=?' , function(j){} ) ;
 
 		var params = me.getHashVars() ;
 		if ( params.worldwide == '1' ) me.worldwide = true ;
@@ -1666,7 +1666,7 @@ var wikishootme = {
 		} ) ;
 		
 		// Load translation
-		me.tt = new ToolTranslation ( { tool: 'wikishootme' , fallback:'en' , callback : function () {
+		me.tt = new ToolTranslation ( { tool: 'wikisoundme' , fallback:'en' , callback : function () {
 			fin() ;
 		} , onLanguageChange : function ( new_language ) {
 			me.language = new_language ;
