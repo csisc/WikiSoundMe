@@ -302,7 +302,7 @@ function showItemsAroundCoord ( lat , lon ) {
 	coords = { lat:lat , lon:lon , radius:radius , items:{} , ended:{} } ;
 	
 	var sparql = 'SELECT ?item ?itemlocation WHERE { SERVICE wikibase:around { ?item wdt:P625 ?itemlocation . bd:serviceParam wikibase:center "Point(' ;
-	sparql += lon + ' ' + lat + ')"^^geo:wktLiteral . bd:serviceParam wikibase:radius "' + radius + '" . }  OPTIONAL { ?item wdt:P18 ?dummy0 } FILTER(!bound(?dummy0)) }' ;
+	sparql += lon + ' ' + lat + ')"^^geo:wktLiteral . bd:serviceParam wikibase:radius "' + radius + '" . }  OPTIONAL { ?item wdt:P51 ?dummy0 } FILTER(!bound(?dummy0)) }' ;
 	
 	var sparql_url = 'https://query.wikidata.org/bigdata/namespace/wdq/sparql' ;
 	
