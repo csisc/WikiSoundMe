@@ -82,7 +82,7 @@ function addImageToItem ( $q , $image ) {
 	$image = ucfirst ( trim ( str_replace ( '_' , ' ' , $image ) ) ) ;
 	$oa = new MW_OAuth ( 'wikishootme' , 'wikidata' , 'wikidata' ) ;
 	$claim = [
-		"prop" => "P18" ,
+		"prop" => "P51" ,
 		"text" => $image ,
 		"q" => $q ,
 		"type" => "string"
@@ -139,7 +139,7 @@ if ( $action == 'check' ) {
 	$label = $tfc->getRequest ( 'label' , '' ) ;
 	$lang = $tfc->getRequest ( 'lang' , '' ) ;
 	$p131 = $tfc->getRequest ( 'p131' , '' ) ;
-	$p18 = $tfc->getRequest ( 'p18' , '' ) ;
+	$p51 = $tfc->getRequest ( 'p51' , '' ) ;
 	
 	if ( $lat=='' or $lng=='' or $label=='' or $lang=='' ) mydie ( "Missing param" ) ;
 	
@@ -188,13 +188,13 @@ if ( $action == 'check' ) {
 		) ;
 	}
 
-	if ( $p18 != '' ) {
+	if ( $p51 != '' ) {
 		$data['claims'][] = array (
 			'mainsnak' => array (
 				'snaktype' => 'value' ,
-				'property' => 'P18' ,
+				'property' => 'P51' ,
 				'datavalue' => array (
-					'value' => $p18 ,
+					'value' => $p51 ,
 					'type' => 'string'
 				) ,
 				'datatype' => 'commonsMedia'
@@ -228,7 +228,7 @@ if ( $action == 'check' ) {
 	$wil->loadItem ( $q ) ;
 	if ( $wil->hasItem($q) ) {
 		$item = $wil->getItem($q) ;
-		if ( $item->hasClaims('P18') ) mydie ( 'Already has an image' ) ;
+		if ( $item->hasClaims('P51') ) mydie ( 'Already has an image' ) ;
 	}
 	
 	// Get uploaded file
