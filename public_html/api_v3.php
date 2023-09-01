@@ -8,10 +8,10 @@ ini_set('display_errors', 'On');
 require_once ( 'php/wikidata.php' ) ;
 require_once ( 'php/Widar.php' ) ;
 
-$tfc = new ToolforgeCommon ( 'wikishootme' ) ;
-$tool_hashtag = $tfc->getRequest ( 'tool_hashtag' , 'wikishootme' ) ;
+$tfc = new ToolforgeCommon ( 'wikisoundme' ) ;
+$tool_hashtag = $tfc->getRequest ( 'tool_hashtag' , 'wikisoundme' ) ;
 $action = $tfc->getRequest ( 'action' , '' ) ;
-$oa = new MW_OAuth ( 'wikishootme' , 'commons' , 'wikimedia' ) ;
+$oa = new MW_OAuth ( 'wikisoundme' , 'commons' , 'wikimedia' ) ;
 
 // GPS converter from http://stackoverflow.com/questions/2526304/php-extract-gps-exif-data#2572991
 function gps($coordinate, $hemisphere) {
@@ -61,7 +61,7 @@ function setCoordinates ( $q , $coordinates ) {
 		return ;
 	}
 	$q = 'Q' . preg_replace ( '/\D/' , '' , $q ) ;
-	$oa = new MW_OAuth ( 'wikishootme' , 'wikidata' , 'wikidata' ) ;
+	$oa = new MW_OAuth ( 'wikisoundme' , 'wikidata' , 'wikidata' ) ;
 	$claim = [
 		"prop" => "P625" ,
 		"lat" => $m[1]*1 ,
@@ -80,7 +80,7 @@ function setCoordinates ( $q , $coordinates ) {
 function addImageToItem ( $q , $image ) {
 	global $out ;
 	$image = ucfirst ( trim ( str_replace ( '_' , ' ' , $image ) ) ) ;
-	$oa = new MW_OAuth ( 'wikishootme' , 'wikidata' , 'wikidata' ) ;
+	$oa = new MW_OAuth ( 'wikisoundme' , 'wikidata' , 'wikidata' ) ;
 	$claim = [
 		"prop" => "P51" ,
 		"text" => $image ,
@@ -95,7 +95,7 @@ function addImageToItem ( $q , $image ) {
 	$out['res'] = $oa->last_res ;	
 }
 
-if ( isset($_REQUEST['oauth_verifier']) ) redirect2url ( 'https://wikishootme.toolforge.org/' ) ;
+if ( isset($_REQUEST['oauth_verifier']) ) redirect2url ( 'https://wikisoundme.toolforge.org/' ) ;
 
 $out = ['status'=>'OK'] ;
 
@@ -106,7 +106,7 @@ if ( $action == 'check' ) {
 	$oa->logout();
 	exit(0);
 } else if ( $action == 'authorize' ) {
-	$oa->doAuthorizationRedirect('https://wikishootme.toolforge.org/api_v3.php');
+	$oa->doAuthorizationRedirect('https://wikisoundme.toolforge.org/api_v3.php');
 	exit(0);
 
 } else if ( $action == 'changeCoordinates' ) {
@@ -204,7 +204,7 @@ if ( $action == 'check' ) {
 		) ;
 	}
 	
-	$oa = new MW_OAuth ( 'wikishootme' , 'wikidata' , 'wikidata' ) ;
+	$oa = new MW_OAuth ( 'wikisoundme' , 'wikidata' , 'wikidata' ) ;
 	if ( !$oa->createItem ( $data ) ) {
 		$out['status'] = 'ERROR' ;
 		$out['res'] = $oa->last_res ;
@@ -287,9 +287,9 @@ if ( $action == 'check' ) {
 	}
 
 } else {
-	$widar = new \Widar ( 'wikishootme' ) ;
+	$widar = new \Widar ( 'wikisoundme' ) ;
 	$widar->attempt_verification_auto_forward ( '/picturethis' ) ;
-	$widar->authorization_callback = 'https://wikishootme.toolforge.org/api_v3.php' ;
+	$widar->authorization_callback = 'https://wikisoundme.toolforge.org/api_v3.php' ;
 	if ( $widar->render_reponse(true) ) exit(0);
 
 	$out['status'] = "UNKNOWN ACTION '{$action}'" ;
