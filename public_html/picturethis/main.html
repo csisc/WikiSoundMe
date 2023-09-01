@@ -87,7 +87,7 @@ div.search_result_row:first-of-type {
 							</label>
 							<input type='hidden' name='action' :value='upload_mode' />
 							<input type='hidden' name='q' :value='r.id' />
-							<input type='hidden' name='tool_hashtag' value='wikishootme/picturethis' />
+							<input type='hidden' name='tool_hashtag' value='wikisoundme/picturethis' />
 							<input type='hidden' name='wpDestFile' :value='getNewFileName(r)' />
 							<input type='hidden' name='wpUploadDescription' :value='getNewFileDescription(r)' />
 							<input type='submit' style='display:none' name='wpUpload' value='UPLOAD FILE' />
@@ -106,7 +106,7 @@ div.search_result_row:first-of-type {
 
 var uploadMixin = Vue.mixin({
 	data : function () { return {
-		api_v3 : 'https://wikishootme.toolforge.org/api_v3.php' ,
+		api_v3 : 'https://wikisoundme.toolforge.org/api_v3.php' ,
 		wsm : {
 			is_logged_in:false,
 			userinfo:{}
@@ -278,7 +278,7 @@ let MainPage = Vue.extend ( {
 			return "{{Information\n|description=" + r.i.getDesc() + "\n|source={{self-made}}\n|author=~~~\n}}\n{{CC-BY-SA-3.0}}" ;
 		} ,
 		getCoordsURL : function ( r ) {
-			return "https://wikishootme.toolforge.org/#lat="+r.coords[1]+"&lng="+r.coords[0]+"&zoom=16" ;
+			return "https://wikisoundme.toolforge.org/#lat="+r.coords[1]+"&lng="+r.coords[0]+"&zoom=16" ;
 		} ,
 		changeMode : function () {
 			var me = this ;
