@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/leaflet-contextmenu/1.4.0/leaflet.contextmenu.min.css">
 <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/uppy/3.5.0/uppy.min.css">
-<link rel="stylesheet" href="https://wikishootme.toolforge.org/main_v3.css">
+<link rel="stylesheet" href="https://wikisoundme.toolforge.org/main_v3.css">
 
 <title tt='toolname'></title>
 <script src='https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
@@ -22,19 +22,19 @@
 <script src="https://tools-static.wmflabs.org/magnustools/resources/js/md5.js"></script>
 <script src="https://tools-static.wmflabs.org/magnustools/resources/js/wikidata.js"></script>
 <script src="https://tools-static.wmflabs.org/tooltranslate/tt.js"></script>
-<script src="https://wikishootme.toolforge.org/main_v3.js"></script>
-<script src="https://wikishootme.toolforge.org/wsm_comm.js"></script>
+<script src="https://wikisoundme.toolforge.org/main_v3.js"></script>
+<script src="https://wikisoundme.toolforge.org/wsm_comm.js"></script>
 
 
 <script type='text/javascript'>
 $(document).ready ( function () {
-	wikishootme.init() ;
+	wikisoundme.init() ;
 } ) ;
 
 {
 var m = window.location.href.match(/\?(.+)$/) ;
 if ( m != null  ) {
-	var url = '/wikishootme/#' + m[1].replace(/\#/,'&') ;
+	var url = '/wikisoundme/#' + m[1].replace(/\#/,'&') ;
 	window.location.href = url ;
 }
 }
@@ -73,7 +73,7 @@ if ( m != null  ) {
     <a class="dropdown-item" href="#" target='_blank' id='wdfist' tt='wdfist' tt_title='wdfist_hint'></a>
     <a class="dropdown-item" href="#" target='_blank' id='flickr' tt='flickr' tt_title='flickr_hint'></a>
     <a class="dropdown-item" href="#" target='_blank' id='sparql_filter_button'><span tt='sparql_filter_dialog'></span><span id='is_using_filter'>&nbsp;<i class="fa fa-check" aria-hidden="true"></i></span></a>
-    <a class="dropdown-item"  href='https://meta.wikimedia.org/wiki/WikiShootMe' target='_blank' tt='about'></a>
+    <a class="dropdown-item"  href='https://github.com/csisc/WikiSoundMe' target='_blank' tt='about'></a>
     <div id='tile_wrapper' class='dropdown-item'></div>
   </div>
 </div>
