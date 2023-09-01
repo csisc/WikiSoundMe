@@ -64,8 +64,8 @@ div.search_result_row:first-of-type {
 					<div v-if='r.description!=""'><i>{{r.description}}</i></div>
 				</div>
 				<div style='width:64px;height:64px;text-align:center;vertical-align:middle'>
-					<div v-if='r.i.hasClaims("P18")'>
-						<img :src='getIconURL(r.i.getFirstStringForProperty("P18"))' />
+					<div v-if='r.i.hasClaims("P51")'>
+						<img :src='getIconURL(r.i.getFirstStringForProperty("P51"))' />
 					</div>
 					<div v-else-if='r.status=="uploaded"' style='border:2px solid green'>
 						<img :src='getIconURL(r.new_file_name)' border=0 />
