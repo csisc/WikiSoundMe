@@ -1,10 +1,10 @@
 var wsm_comm = {
 	is_app : false,
-	api_v3 : 'https://wikishootme.toolforge.org/api_v3.php' ,
+	api_v3 : 'https://wikisoundme.toolforge.org/api_v3.php' ,
 	api_autodesc : 'https://tools.wmflabs.org/autodesc' ,
 	api_wikidata : 'https://www.wikidata.org/w/api.php' ,
 	url_flinfo : 'https://tools.wmflabs.org/flickr2commons/flinfo_proxy.php' ,
-	url_flickr_key : 'https://wikishootme.toolforge.org/flickr.key' ,
+	url_flickr_key : 'https://wikisoundme.toolforge.org/flickr.key' ,
 	
 	userinfo : {} ,
 	is_logged_in : false ,
@@ -133,7 +133,7 @@ var wsm_comm = {
 	
 	appLogin : function () {
 		this.isLoggedIn ( function ( is_logged_in ) {
-			if ( is_logged_in ) wikishootme.updateLayers() ;
+			if ( is_logged_in ) wikisoundme.updateLayers() ;
 		} ) ;
 		return false ;
 	} ,
