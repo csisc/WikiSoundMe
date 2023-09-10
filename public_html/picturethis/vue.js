@@ -11,7 +11,7 @@ $(document).ready ( function () {
 		vue_components.loadComponents ( ['wd-link','widar','tool-translate','tool-navbar','main.html'] ) ,
 //		new Promise(function(resolve, reject) { resolve() } )
 	] )	.then ( () => {
-			widar_api_url = 'https://wikisoundme.toolforge.org/api_v3.php' ;
+			widar_api_url = 'https://wikishootme.toolforge.org/api_v3.php' ;
 			wd_link_wd = wd ;
 			const routes = [
 			  { path: '/', component: MainPage , props:true },
