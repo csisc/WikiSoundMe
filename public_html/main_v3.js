@@ -970,10 +970,10 @@ var wikishootme = {
 			sparql += 'bd:serviceParam wikibase:cornerNorthEast "Point('+ne.lng+' '+ne.lat+')"^^geo:wktLiteral } ' ;
 		}
 		sparql += me.sparql_filter ;
-		sparql += ' OPTIONAL { ?q wdt:P18 ?image } ' ;
+		sparql += ' OPTIONAL { ?q wdt:P51 ?image } ' ;
 		sparql += ' OPTIONAL { ?q wdt:P373 ?commonscat } ' ;
 		sparql += ' OPTIONAL { ?q wdt:P969 ?street } ' ;
-		if ( me.check_reason_no_image ) sparql += 'OPTIONAL { ?q p:P18 ?statement . ?statement pq:P828 ?reason } ' ;
+		if ( me.check_reason_no_image ) sparql += 'OPTIONAL { ?q p:P51 ?statement . ?statement pq:P828 ?reason } ' ;
 		
 		if ( me.worldwide ) {
 			sparql += ' OPTIONAL { ?q rdfs:label ?qLabel . FILTER(LANG(?qLabel) = "'+me.language+'") } OPTIONAL { ?q schema:description ?desc . FILTER(LANG(?desc) = "'+me.language+'") } ' ;
@@ -1268,7 +1268,7 @@ var wikishootme = {
 				lat:o.pos.lat,
 				lng:o.pos.lng,
 				p131:p131,
-				p18:o.image,
+				p51:o.image,
 				label:label,
 				lang:me.language
 			} , function ( d ) {
