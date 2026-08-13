@@ -312,7 +312,7 @@ wikishootme.createNewItem = function (o) {
 				p131: result.p131,
 				p31: o.p31,
 				p17: result.country,
-				p18: o.image,
+				p51: o.image,
 				ext_id: o.ext_id ?? '',
 				ext_prop: o.ext_prop ?? '',
 				label: label,
