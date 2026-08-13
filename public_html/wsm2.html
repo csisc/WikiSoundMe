@@ -1,513 +1,1122 @@
-<!DOCTYPE HTML>
-<html lang='en'>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-<title tt='toolname'></title>
+<title>WikiShootMe</title>
 
-<link rel="stylesheet" href="//tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" href="//tools-static.wmflabs.org/cdnjs/ajax/libs/leaflet/1.0.0-rc.2/leaflet.css" />
+<!-- Bootstrap -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
+>
 
-<script type="text/javascript" src='//tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/1.12.1/jquery.min.js'></script>
-<script type="text/javascript" src="//tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="//tools-static.wmflabs.org/cdnjs/ajax/libs/leaflet/1.0.0-rc.2/leaflet.js"></script> <!-- /magnustools/resources/leaflet-0.7.7/leaflet.js -->
-<script type="text/javascript" src='//tools-static.wmflabs.org/tooltranslate/tt.js'></script>
-<script type="text/javascript" src="//tools-static.wmflabs.org/magnustools/resources/js/wikidata.js"></script>
-<script type="text/javascript" src="//tools-static.wmflabs.org/magnustools/resources/js/geo.js"></script>
-
+<!-- Leaflet 1.9.4 -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+>
 
 <style>
 #geomessage {
-	color:#BBB;
-	font-size:8pt;
-	display:block !important;
+    color: #BBB;
+    font-size: 8pt;
+    display: block !important;
 }
+
 td.num {
-	font:Courier;
-	font-size:10pt;
-	text-align:right;
-	width:80px;
+    font-family: Courier, monospace;
+    font-size: 10pt;
+    text-align: right;
+    width: 80px;
 }
+
 div.loading {
-	float:right;
-	margin-left:5px;
-	padding:3px;
-	background-color:red;
-	color:white;
+    float: right;
+    margin-left: 5px;
+    padding: 3px;
+    background-color: red;
+    color: white;
 }
+
 .ended {
-	border-right:15px solid red;
+    border-right: 15px solid red;
+}
+
+#map {
+    width: 100%;
+    height: 512px;
+    margin-top: 20px;
 }
 </style>
-
 </head>
-<body style='display:none'>
 
+<body>
 
 <nav class="navbar navbar-default" role="navigation">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<a class="navbar-brand" tt='toolname' href="#"></a>
-		</div>
-		
-		<div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav navbar-right">
-<!--			<div class="nav pull-right"> </div> -->
-			<li><div id='interface_language_wrapper'></div></li>
-			</ul>
-		</div>
-	</div>
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">WikiShootMe</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <div id="interface_language_wrapper"></div>
+                </li>
+            </ul>
+        </div>
+    </div>
 </nav>
 
 <div class="container">
 
-<div class='lead' tt='intro'></div>
+    <div class="lead">
+        Find Wikidata items near a location that don't have images.
+    </div>
 
-<div>
-<form id='main_form' class='form-inline' role='form'>
-<table class='table'>
-<tbody>
-<tr><th tt='coordinates'></th><td>
-<div style='display:block'>
-<input id='lat' type='text' tt_placeholder='latitude' class='input-sm col-md-2 col-xs-4 col-sm-2' />
-<input id='lon' type='text' tt_placeholder='longitude' class='input-sm col-md-2 col-xs-4 col-sm-2' />
-, <i tt='or'></i>
+    <div>
+        <form id="main_form" class="form-inline" role="form">
+
+            <table class="table">
+                <tbody>
+
+                <tr>
+                    <th>Coordinates</th>
+                    <td>
+                        <div style="display:block">
+                            <input
+                                id="lat"
+                                type="text"
+                                placeholder="Latitude"
+                                class="input-sm col-md-2 col-xs-4 col-sm-2"
+                            >
+
+                            <input
+                                id="lon"
+                                type="text"
+                                placeholder="Longitude"
+                                class="input-sm col-md-2 col-xs-4 col-sm-2"
+                            >
+
+                            , <i>or</i>
+                        </div>
+
+                        <br>
+                        <div id="geomessage"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Wikidata item</th>
+                    <td>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">Q</div>
+
+                                <input
+                                    id="item"
+                                    type="text"
+                                    placeholder="Wikidata item"
+                                    class="input-sm col-xs-7"
+                                >
+                            </div>
+                        </div>
+
+                        , <i>or</i>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Wikipedia article</th>
+                    <td>
+                        <input
+                            id="lang"
+                            type="text"
+                            placeholder="Language"
+                            class="input-sm col-md-1 col-xs-4 col-sm-2"
+                        >
+
+                        <input
+                            id="project"
+                            type="text"
+                            value="wikipedia"
+                            placeholder="Project"
+                            class="input-sm col-md-1 col-xs-6 col-sm-2"
+                        >
+
+                        <input
+                            id="page"
+                            type="text"
+                            placeholder="Article title"
+                            class="input-sm col-md-2 col-xs-10 col-sm-4"
+                        >
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Radius</th>
+                    <td>
+
+                        <div class="form-group">
+                            <div class="input-group">
+
+                                <input
+                                    id="radius"
+                                    type="number"
+                                    min="0.1"
+                                    step="0.1"
+                                    class="input-sm"
+                                    style="text-align:right"
+                                >
+
+                                <div class="input-group-addon">km</div>
+
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Find items without images
+                        </button>
+
+                        <a
+                            id="permalink"
+                            style="margin-left:50px;display:none"
+                        >
+                            Permalink
+                        </a>
+
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+        </form>
+    </div>
+
+    <div id="results"></div>
+
 </div>
-<br/><div id='geomessage'></div>
-</td></tr>
-<tr><th tt='item'></th><td>
-<div class="form-group">
-<div class="input-group">
-<div class="input-group-addon" tt='q'></div>
-<input id='item' type='text' tt_placeholder='wikidata_item' class='input-sm col-xs-7' /> , <i tt='or'></i>
-</div>
-</div>
-</td></tr>
-<tr><th tt='article'></th><td>
-<input id='lang' type='text' tt_placeholder='language' class='input-sm col-md-1 col-xs-4 col-sm-2' />
-<input id='project' type='text' value='wikipedia' tt_placeholder='project' class='input-sm col-md-1 col-xs-6 col-sm-2' />
-<input id='page' type='text' tt_placeholder='article_title' class='input-sm col-md-2 col-xs-10 col-sm-4' />
-</td>
-</tr>
-<tr><th tt='radius'></th><td>
-<div class="form-group">
-<div class="input-group">
-<input id='radius' type='text' class='input-sm' style='text-align:right' />
-<div class="input-group-addon" tt='km'></div>
-</div>
-</div>
-
-<input type='submit' tt_value='find_items_without_images' class='btn btn-primary' />
-
-<a id='permalink' style='margin-left:50px;display:none' tt='permalink'></a>
-
-</td></tr>
-</tbody>
-</table>
-</form>
-</div>
-
-<div id='results'>
-</div>
-
-<div style='font-size:8pt;text-align:center;padding-top:2px;margin-top:5px;border-top:1px solid #EEE' tt='link_original'></div>
 
 
-</div>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+
+<!-- Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 
 <script>
 
-if (typeof Number.prototype.toRadians == 'undefined') {
-    Number.prototype.toRadians = function() { return this * Math.PI / 180; };
+/*
+ * WikiShootMe
+ * GitHub Pages updated version
+ */
+
+if (typeof Number.prototype.toRadians === 'undefined') {
+    Number.prototype.toRadians = function () {
+        return this * Math.PI / 180;
+    };
 }
 
-var default_radius = 5 ;
-var default_project = 'wikipedia' ;
+var default_radius = 5;
+var default_project = 'wikipedia';
 
-var tt ;
-var wd ;
-var coords = {} ;
-var wdq_api = '//wdq.wmflabs.org/api?' ;
-var last_data ;
+var coords = {};
+var last_data;
+var map = null;
 
-function auto_coords ( pos ) {
-	$('#lat').val ( pos.coords.latitude ) ;
-	$('#lon').val ( pos.coords.longitude ) ;
-	$('#geomessage').html ( "<span tt='we_know'></span>" ) ;
-	tt.updateInterface ( $('#geomessage') ) ;
-	if ( getParameterByName ( 'autorun' ) != '' ) run () ;
+function getParameterByName(name, def) {
+
+    if (typeof def === 'undefined') {
+        def = '';
+    }
+
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+
+    var regexS = "[\\?&]" + name + "=([^&#]*)";
+    var regex = new RegExp(regexS);
+
+    var results = regex.exec(window.location.href);
+
+    if (results == null) {
+        return def;
+    }
+
+    return decodeURIComponent(
+        results[1].replace(/\+/g, " ")
+    );
 }
 
-function no_auto_coords ( message ) {
-	var out = '<span tt="cannot_determine_coords"></span>' ;
-	if ( typeof message != 'undefined' ) out += ': ' + message.message ;
-	$('#geomessage').html ( out ) ;
-	tt.updateInterface ( $('#geomessage') ) ;
-	if ( getParameterByName ( 'autorun' ) != '' ) run () ;
+
+/*
+ * Get user's location
+ */
+
+function auto_coords(pos) {
+
+    $('#lat').val(pos.coords.latitude);
+    $('#lon').val(pos.coords.longitude);
+
+    $('#geomessage').html(
+        '<span class="text-success">Location detected.</span>'
+    );
+
+    if (getParameterByName('autorun') !== '') {
+        run();
+    }
 }
 
-function getParameterByName( name , def ) {
-	if ( typeof def == 'undefined' ) def = '' ;
-	name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-	var regexS = "[\\?&]"+name+"=([^&#]*)";
-	var regex = new RegExp( regexS );
-	var results = regex.exec( window.location.href );
-	if( results == null ) return def;
-	else return decodeURIComponent(results[1].replace(/\+/g, " "));
+
+function no_auto_coords(message) {
+
+    var text = 'Unable to determine your location.';
+
+    if (message && message.message) {
+        text += ' ' + message.message;
+    }
+
+    $('#geomessage').html(
+        '<span class="text-warning">' + text + '</span>'
+    );
+
+    if (getParameterByName('autorun') !== '') {
+        run();
+    }
 }
+
 
 function getCoords() {
-	var lat = getParameterByName ( 'lat' ) ;
-	var lon = getParameterByName ( 'lon' , getParameterByName ( 'lng' ) ) ;
-	if ( lat != '' && lon != '' ) {
-		var pos = new Object ;
-		pos.coords = new Object ;
-		pos.coords.latitude = lat ;
-		pos.coords.longitude = lon ;
-		auto_coords ( pos ) ;
-	} else if(geo_position_js.init()){
-		$('#geomessage').html ( "<span tt='trying_position'></span>" ) ;
-		tt.updateInterface ( $('#geomessage') ) ;
-		geo_position_js.getCurrentPosition(auto_coords,no_auto_coords);
-	} else {
-		no_auto_coords() ;
-	}
+
+    var lat = getParameterByName('lat');
+
+    var lon = getParameterByName(
+        'lon',
+        getParameterByName('lng')
+    );
+
+    if (lat !== '' && lon !== '') {
+
+        var pos = {
+            coords: {
+                latitude: lat,
+                longitude: lon
+            }
+        };
+
+        auto_coords(pos);
+
+    } else if (navigator.geolocation) {
+
+        $('#geomessage').html(
+            '<span>Trying to determine your location...</span>'
+        );
+
+        navigator.geolocation.getCurrentPosition(
+            auto_coords,
+            no_auto_coords
+        );
+
+    } else {
+
+        no_auto_coords();
+    }
 }
 
-function nameItems ( itemlist ) {
-	var h = "<div class='loading' tt='getting_labels'></div>" ;
-	$('#results').prepend ( h ) ;
-	tt.updateInterface ( $('div.loading') ) ;
-	var i2 = [] ;
-	$.each ( itemlist , function ( k , v ) { i2.push ( 'Q'+v ) } )
-	wd.getItemBatch ( i2 , function () {
-		$('div.loading').remove() ;
-		$.each ( itemlist , function ( k , q ) {
-			var o = $("#results_table tr[q='"+q+"'] td.link a") ;
-			var i = wd.getItem('Q'+q) ;
-			if ( typeof i == 'undefined' ) {
-				$("#results_table tr[q='"+q+"']").remove() ; // No such item
-			} else {
-				o.text ( i.getLabel() ) ;
-			}
-		} ) ;
-	} ) ;
+
+/*
+ * Distance calculation
+ */
+
+function getDistance(lat1, lon1, lat2, lon2) {
+
+    var R = 6371;
+
+    var φ1 = lat1.toRadians();
+    var φ2 = lat2.toRadians();
+
+    var Δφ = (lat2 - lat1).toRadians();
+    var Δλ = (lon2 - lon1).toRadians();
+
+    var a =
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) *
+        Math.cos(φ2) *
+        Math.sin(Δλ / 2) *
+        Math.sin(Δλ / 2);
+
+    var c =
+        2 *
+        Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1 - a)
+        );
+
+    return R * c;
 }
 
-function sort_by_distance ( a , b ) {
-	if ( coords.items[a][2] < coords.items[b][2] ) return -1 ;
-	if ( coords.items[a][2] > coords.items[b][2] ) return 1 ;
-	return 0 ;
+
+function isMobile() {
+    return L.Browser.mobile;
 }
 
-function getDistance ( lat1 , lon1 , lat2 , lon2 ) {
-	var R = 6371; // km
-	var φ1 = lat1.toRadians();
-	var φ2 = lat2.toRadians();
-	var Δφ = (lat2-lat1).toRadians();
-	var Δλ = (lon2-lon1).toRadians();
 
-	var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-			Math.cos(φ1) * Math.cos(φ2) *
-			Math.sin(Δλ/2) * Math.sin(Δλ/2);
-	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+/*
+ * Google Maps route
+ */
 
-	var d = R * c;
-	return d ;
+function getRouteLink(lat, lon, text) {
+
+    if (typeof text === 'undefined') {
+        text = 'Route';
+    }
+
+    var url =
+        'https://www.google.com/maps/dir/?api=1' +
+        '&origin=' +
+        encodeURIComponent(coords.lat + ',' + coords.lon) +
+        '&destination=' +
+        encodeURIComponent(lat + ',' + lon);
+
+    return (
+        '<a href="' +
+        url +
+        '" target="_blank" rel="noopener">' +
+        text +
+        '</a>'
+    );
 }
 
-function isMobile () {
-	return L.Browser.mobile ;
-//	if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) return true ;
-//	return false ;
+
+/*
+ * Wikidata description
+ */
+
+function describe(q, callback) {
+
+    $.get(
+        'https://www.wikidata.org/w/api.php',
+        {
+            action: 'wbgetentities',
+            ids: q,
+            props: 'labels|descriptions',
+            languages: 'en',
+            format: 'json',
+            origin: '*'
+        },
+        function(data) {
+
+            var entity =
+                data.entities &&
+                data.entities[q];
+
+            if (!entity) {
+                callback({
+                    label: q,
+                    result: ''
+                });
+                return;
+            }
+
+            var label =
+                entity.labels &&
+                entity.labels.en
+                    ? entity.labels.en.value
+                    : q;
+
+            var description =
+                entity.descriptions &&
+                entity.descriptions.en
+                    ? entity.descriptions.en.value
+                    : '';
+
+            callback({
+                label: label,
+                result: description
+            });
+
+        }
+    ).fail(function() {
+
+        callback({
+            label: q,
+            result: ''
+        });
+
+    });
 }
 
-function getRouteLink ( lat , lon , text ) {
-	if ( typeof text == 'undefined' ) text = 'route' ;
-	var url = "https://maps.google.co.uk/maps?dirflg=w&saddr=" + coords.lat + "," + coords.lon + "&daddr=" + lat + "," + lon ;
-	return "<a href='" + url + "' target='_blank' tt_title='route'>" + text + "</a>" ;
+
+/*
+ * Leaflet map
+ */
+
+function showMap() {
+
+    if (!coords.items || Object.keys(coords.items).length === 0) {
+        return;
+    }
+
+    if (map !== null) {
+        map.remove();
+        map = null;
+    }
+
+    map = L.map('map', {
+        tap: false
+    });
+
+    /*
+     * OpenStreetMap tiles
+     */
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            maxZoom: 19,
+            attribution:
+                '&copy; OpenStreetMap contributors'
+        }
+    ).addTo(map);
+
+    var markers = [];
+
+    $.each(coords.items, function(q, v) {
+
+        q = 'Q' + ('' + q).replace(/\D/g, '');
+
+        var marker =
+            L.circleMarker(
+                [v[0], v[1]],
+                {
+                    radius: 7,
+                    weight: 2,
+                    fillOpacity: 0.7
+                }
+            );
+
+        marker.on('click', function() {
+
+            describe(q, function(d) {
+
+                var html =
+                    '<div style="margin-bottom:5px;border-bottom:1px solid #DDD">' +
+                    '<a href="https://www.wikidata.org/wiki/' +
+                    q +
+                    '" target="_blank" rel="noopener">' +
+                    d.label +
+                    '</a> (' +
+                    q +
+                    ')' +
+                    '</div>';
+
+                if (d.result) {
+                    html +=
+                        '<div>' +
+                        d.result +
+                        '</div>';
+                }
+
+                html +=
+                    '<div style="margin-top:5px;border-top:1px solid #DDD">' +
+                    'Distance: ' +
+                    Math.round(v[2] * 10) / 10 +
+                    ' km (' +
+                    getRouteLink(v[0], v[1]) +
+                    ')' +
+                    '</div>';
+
+                marker
+                    .bindPopup(html)
+                    .openPopup();
+
+            });
+
+        });
+
+        markers.push(marker);
+    });
+
+    var fg =
+        L.featureGroup(markers)
+            .addTo(map);
+
+    if (markers.length === 1) {
+
+        map.setView(
+            markers[0].getLatLng(),
+            15
+        );
+
+    } else {
+
+        map.fitBounds(
+            fg.getBounds(),
+            {
+                padding: [20, 20]
+            }
+        );
+    }
+
+    setTimeout(function() {
+        map.invalidateSize();
+    }, 100);
 }
 
-function describe ( q , callback ) {
-	$.get ( 'https://tools.wmflabs.org/autodesc/' , {
-		q:q,
-		lang:tt.language,//'any',
-		mode:'short',
-		links:'wikidata',
-		format:'json'
-	} , function ( d ) {
-		d.result = d.result.replace ( /<a /g , '<a target="_blank" ' ) ;
-		callback ( d ) ;
-	} ) ;
+
+/*
+ * Find nearby Wikidata items
+ */
+
+function showItemsAroundCoord(lat, lon) {
+
+    var radius =
+        parseFloat($('#radius').val());
+
+    if (!radius || radius <= 0) {
+        radius = default_radius;
+    }
+
+    coords = {
+        lat: parseFloat(lat),
+        lon: parseFloat(lon),
+        radius: radius,
+        items: {},
+        ended: {}
+    };
+
+    var sparql =
+        'SELECT ?item ?itemlocation WHERE {' +
+        ' SERVICE wikibase:around {' +
+        ' ?item wdt:P625 ?itemlocation .' +
+        ' bd:serviceParam wikibase:center "Point(' +
+        lon +
+        ' ' +
+        lat +
+        ')"^^geo:wktLiteral .' +
+        ' bd:serviceParam wikibase:radius "' +
+        radius +
+        '" .' +
+        ' }' +
+        ' FILTER NOT EXISTS {' +
+        ' ?item wdt:P18 ?image .' +
+        ' }' +
+        '}';
+
+    var sparql_url =
+        'https://query.wikidata.org/sparql';
+
+    $('#results').html(
+        '<div class="loading">Looking for items...</div>'
+    );
+
+    $.ajax({
+        url: sparql_url,
+        data: {
+            query: sparql,
+            format: 'json'
+        },
+        dataType: 'json',
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    })
+
+    .done(function(d) {
+
+        var items = [];
+
+        $.each(
+            d.results.bindings,
+            function(k, v) {
+
+                var q =
+                    v.item.value.replace(
+                        /^.+entity\/Q/,
+                        ''
+                    );
+
+                var parts =
+                    v.itemlocation.value
+                        .replace(
+                            /^Point\((.+? .+?)\)$/,
+                            '$1'
+                        )
+                        .split(' ');
+
+                var itemLat =
+                    parseFloat(parts[1]);
+
+                var itemLon =
+                    parseFloat(parts[0]);
+
+                items.push(q);
+
+                coords.items[q] = [
+                    itemLat,
+                    itemLon,
+                    getDistance(
+                        lat,
+                        lon,
+                        itemLat,
+                        itemLon
+                    )
+                ];
+            }
+        );
+
+        items.sort(sort_by_distance);
+
+        var html =
+            '<h2>Results</h2>';
+
+        html +=
+            '<div class="lead">' +
+            items.length +
+            ' items without images' +
+            '</div>';
+
+        if (items.length > 0) {
+
+            html +=
+                '<div style="max-height:500px;overflow:auto">' +
+                '<table id="results_table" class="table table-condensed table-striped">' +
+                '<thead>' +
+                '<tr>' +
+                '<th>Distance</th>' +
+                '<th>Item</th>' +
+                '<th>Description</th>' +
+                '</tr>' +
+                '</thead>' +
+                '<tbody>';
+
+            $.each(items, function(k, q) {
+
+                var v = coords.items[q];
+
+                var route =
+                    getRouteLink(
+                        v[0],
+                        v[1],
+                        Math.round(v[2] * 10) / 10 +
+                        ' km'
+                    );
+
+                html +=
+                    '<tr q="' +
+                    q +
+                    '">' +
+                    '<td class="num">' +
+                    route +
+                    '</td>' +
+                    '<td class="link">' +
+                    '<a href="https://www.wikidata.org/wiki/Q' +
+                    q +
+                    '" target="_blank" rel="noopener">' +
+                    'Q' +
+                    q +
+                    '</a>' +
+                    '</td>' +
+                    '<td class="autodesc">' +
+                    '<i>Loading...</i>' +
+                    '</td>' +
+                    '</tr>';
+            });
+
+            html +=
+                '</tbody>' +
+                '</table>' +
+                '</div>';
+
+            html +=
+                '<h2>Map</h2>' +
+                '<div id="map"></div>';
+        }
+
+        $('#results').html(html);
+
+        if (items.length > 0) {
+
+            showMap();
+
+            $.each(items, function(k, q) {
+
+                describe(q, function(d) {
+
+                    $(
+                        '#results_table tr[q="' +
+                        q +
+                        '"] td.autodesc'
+                    ).html(d.result);
+
+                });
+
+            });
+        }
+
+    })
+
+    .fail(function(xhr, status, error) {
+
+        $('#results').html(
+            '<div class="alert alert-danger">' +
+            '<strong>Wikidata request failed.</strong><br>' +
+            error +
+            '</div>'
+        );
+    });
 }
 
-function showMap () {
 
-	var style = 'osm-intl';
-	var server = 'https://maps.wikimedia.org/';
+function sort_by_distance(a, b) {
 
-	// Create a map
-	var map = L.map('map' , {tap:false} ) ; //.setView([40.75, -73.96], 4); // , {tap:false,tapTolerance:50} 
+    if (coords.items[a][2] < coords.items[b][2]) {
+        return -1;
+    }
 
-	// Add a map layer
-	L.tileLayer(server + style + '/{z}/{x}/{y}.png', {
-		maxZoom: 18,
-		id: 'wikipedia-map-01',
-		attribution: tt.t('map_attribution')
-	}).addTo(map);
+    if (coords.items[a][2] > coords.items[b][2]) {
+        return 1;
+    }
 
-	var markers = [] ;
-
-	$.each ( coords.items , function ( q , v ) {
-		q = 'Q' + (''+q).replace(/\D/g,'') ;
-		
-		function openIt () {
-
-			describe ( q , function ( d ) {
-				var h = "<div style='margin-bottom:5px;border-bottom:1px solid #DDD'>" ;
-				h += "<a target='_blank' href='//tools.wmflabs.org/reasonator/?q="+q+"'>" + d.label + "</a>" ;
-				h += " (<a href='//www.wikidata.org/wiki/" + q + "' target='_blank'>" + q + "</a>)" ;
-				h += "</div>" ;
-				h += "<div>" + (d.result) + "</div>" ;
-				h += "<div style='margin-top:5px;border-top:1px solid #DDD'>" ;
-				h += "<span tt='distance'></span> " + (Math.round(v[2]*10)/10) + "&nbsp;<span tt='km'></span> (" ;
-				h += getRouteLink ( v[0] , v[1] ) + ")" ;
-				h += "</div>" ;
-			
-				marker.bindPopup ( h ) ;
-				marker.openPopup() ;
-			} ) ;
-
-		}
-		
-		var marker = L.circleMarker([v[0], v[1]] ) ; // circleMarker
-		marker.on ( 'click' , openIt ) ;
-//		marker.on ( 'moveend' , openIt ) ;
-//		marker.on ( 'tap' , openIt ) ;
-//		marker.on ( 'touchstart' , openIt ) ;
-		markers.push ( marker ) ;
-	} ) ;
-	
-	var fg = L.featureGroup(markers).addTo(map) ;
-	map.fitBounds(fg.getBounds());
-	tt.updateInterface () ;
+    return 0;
 }
 
-function showItemsAroundCoord ( lat , lon ) {
-	var radius = $('#radius').val() * 1 ;
-	coords = { lat:lat , lon:lon , radius:radius , items:{} , ended:{} } ;
-	
-	var sparql = 'SELECT ?item ?itemlocation WHERE { SERVICE wikibase:around { ?item wdt:P625 ?itemlocation . bd:serviceParam wikibase:center "Point(' ;
-	sparql += lon + ' ' + lat + ')"^^geo:wktLiteral . bd:serviceParam wikibase:radius "' + radius + '" . }  OPTIONAL { ?item wdt:P51 ?dummy0 } FILTER(!bound(?dummy0)) }' ;
-	
-	var sparql_url = 'https://query.wikidata.org/bigdata/namespace/wdq/sparql' ;
-	
-	$('#results').html ( "<div class='loading' tt='looking4items'></div><div>&nbsp;</div>" ) ;
-	tt.updateInterface ( $('#results') ) ;
 
+/*
+ * Search by Wikidata item
+ */
 
-	$.get ( sparql_url , {
-		query:sparql
-	} , function ( d ) {
-		d.items = [] ;
-		$.each ( d.results.bindings , function ( k , v ) {
-			var q = v.item.value.replace ( /^.+entity\/Q/ , '' ) ;
-			var parts = v.itemlocation.value.replace(/^Point\((.+? .+?)\)$/,'$1').split(' ') ;
-			parts = [ parts[1] , parts[0] ] ;
-			d.items.push ( q ) ;
-			coords.items[q] = [ parts[0] , parts[1] , getDistance(lat*1,lon*1,parts[0]*1,parts[1]*1) ] ;
-			
-		} ) ;
+function showItemsAroundItem(q) {
 
-		d.items = d.items.sort ( sort_by_distance ) ;
-		var h = "<h2 name='results' tt='results'></h2>" ;
-		h += "<div class='lead' tt='items_without_image' tt1='" + d.items.length + "'></div>" ;
-		h += "<div>" ;
-		h += "<span tt='check_wikidata' tt1='"+encodeURIComponent(sparql)+"'></span> " ;
-		h += "<span tt='find_images' tt1='lat="+lat+"&lon="+lon+"&radius="+radius+"&doit=1'></span>" ;
-		h += "</div>" ;
-		if ( d.items.length > 0 ) {
-			h += "<div style='max-height:500px;overflow:auto'>" ;
-			h += "<table id='results_table' class='table table-condensed table-striped'>" ;
-			h += "<thead><th tt='distance'></th><th tt='item'></th>" ;
-			if ( !isMobile() ) h += "<th tt='description'></th>" ;
-			h += "</tr></thead><tbody>" ;
-			$.each ( d.items , function ( k , q ) {
-				var route_link = getRouteLink ( coords.items[q][0] , coords.items[q][1] , (Math.round(coords.items[q][2]*10)/10) + "&nbsp;<span tt='km'></span>" ) ;
-				h += "<tr q='" + q + "'>" ;
-				h += "<td class='num'>" + route_link + "</td>" ;
-				h += "<td class='link" ;
-				if ( typeof coords.ended[q] != 'undefined' ) h += ' ended' ;
-				h += "'><a href='//www.wikidata.org/wiki/Q" + q + "' target='_blank'>Q" + q + "</a></td>" ;
-				if ( !isMobile() ) {
-					h += "<td class='autodesc'><i tt='loading_description'></i></td>" ;
-				}
-				h += "</tr>" ;
-			} ) ;
-			h += "</tbody></table>" ;
-			h += "</div>" ;
-			h += "<h2 name='map' tt='map'></h2>" ;
-			h += '<div id="map" style="width: 100%; height: 512px; margin-top:20px;" class="smallmap"></div>' ;
-		}
-		$('#results').html ( h ) ;
-		tt.updateInterface ( $('#results') ) ;
+    $.getJSON(
+        'https://www.wikidata.org/w/api.php',
+        {
+            action: 'wbgetentities',
+            ids: 'Q' + q,
+            props: 'claims',
+            format: 'json',
+            origin: '*'
+        }
+    )
+    .done(function(d) {
 
-		if ( d.items.length > 0 ) {
-			nameItems ( d.items ) ;
-			showMap() ;
-			if ( !isMobile() ) {
-				setTimeout ( function () { // Delayed description loading
-					$.each ( d.items , function ( k , q ) {
-						describe ( q , function ( d ) {
-							$('#results_table tr[q="'+q+'"] td.autodesc').html ( d.result ) ;
-						} ) ;
-					} ) ;
-				} , 500 ) ;
-			}
-		}
-		setTimeout ( function () {
-			var s = L.Browser.mobile ? "map" : "results" ;
-			s += '&interface_language=' + tt.language ;
-			window.location.hash = s ;
-		} , 100 ) ;
-	} , 'json' ) ;
-//	} ) ;
+        var entity =
+            d.entities &&
+            d.entities['Q' + q];
+
+        if (
+            !entity ||
+            !entity.claims ||
+            !entity.claims.P625
+        ) {
+            alert(
+                'This Wikidata item does not have coordinates.'
+            );
+            return;
+        }
+
+        var c =
+            entity.claims.P625[0]
+                .mainsnak
+                .datavalue
+                .value;
+
+        showItemsAroundCoord(
+            c.latitude,
+            c.longitude
+        );
+
+    })
+    .fail(function() {
+
+        alert(
+            'Unable to retrieve the Wikidata item.'
+        );
+
+    });
 }
 
-function showItemsAroundItem ( q ) {
-	$.getJSON ( '//www.wikidata.org/w/api.php?callback=?' , {
-		action:'wbgetentities',
-		ids:'Q'+q,
-		format:'json'
-	} , function ( d ) {
-		
-		var found = false ;
-		$.each ( (d.entities||[]) , function ( k , v ) {
-			if ( typeof v.claims == 'undefined' || typeof v.claims.P625 == 'undefined' ) {
-				return false ;
-			}
-			found = true ;
-			var c = v.claims.P625[0] ;
-			var lat = c.mainsnak.datavalue.value.latitude ;
-			var lon = c.mainsnak.datavalue.value.longitude ;
-			showItemsAroundCoord ( lat , lon ) ;
-			return false ;
-		} ) ;
 
-		if ( !found ) {
-			alert ( tt.t('no_item_or_coordinates') ) ;
-			return ;
-		}
-		
-	} ) ;
+/*
+ * Search by Wikipedia article
+ */
+
+function showItemsAroundPage(
+    language,
+    project,
+    article
+) {
+
+    $.getJSON(
+        'https://' +
+        language +
+        '.' +
+        project +
+        '.org/w/api.php',
+        {
+            action: 'query',
+            prop: 'coordinates',
+            titles: article,
+            format: 'json',
+            origin: '*'
+        }
+    )
+    .done(function(data) {
+
+        if (
+            !data ||
+            !data.query ||
+            !data.query.pages
+        ) {
+            alert(
+                'Wikipedia article not found.'
+            );
+            return;
+        }
+
+        var key;
+
+        for (key in data.query.pages) {
+            break;
+        }
+
+        var page =
+            data.query.pages[key];
+
+        if (
+            !page ||
+            !page.coordinates ||
+            !page.coordinates.length
+        ) {
+            alert(
+                'Could not determine coordinates for this article.'
+            );
+            return;
+        }
+
+        var lat =
+            page.coordinates[0].lat;
+
+        var lon =
+            page.coordinates[0].lon;
+
+        showItemsAroundCoord(lat, lon);
+
+    })
+    .fail(function() {
+
+        alert(
+            'Unable to contact Wikipedia.'
+        );
+
+    });
 }
 
-function showItemsAroundPage ( l , project , article ) {
-	$.getJSON ( "//" + l + ".wikipedia.org/w/api.php?callback=?" , {
-		action : 'query' ,
-		prop : 'coordinates' ,
-		titles : article ,
-		format : 'json'
-	} , function ( data ) {
 
-		if ( 'undefined' == typeof data || 'undefined' == typeof data.query || 'undefined' == typeof data.query.pages ) {
-			alert ( 'No page "' + article + '" on ' + l + '.wikipedia. Please fix the article name or enter coordinates manually.' ) ;
-			return ;
-		}
+/*
+ * Permalink
+ */
 
-		var key ;
-		for ( key in data.query.pages ) { break ; }
-		if ( key == -1 ) {
-			alert ( 'No page "' + article + '" on ' + l + '.wikipedia. Please fix the article name or enter coordinates manually.' ) ;
-			return ;
-		}
+function setPermalink(o) {
 
-		if ( 'undefined' == typeof data.query.pages[key].coordinates ) {
-			alert ( 'Could not determine coordinates of "' + article + '" on ' + l + '.wikipedia. Please enter coordinates manually.' ) ;
-			return ;
-		}
+    o.autorun = 1;
 
-		var lat = data.query.pages[key].coordinates[0].lat ;
-		var lon = data.query.pages[key].coordinates[0].lon ;
-		showItemsAroundCoord ( lat , lon ) ;
-		
-	} ) ;
+    o.radius =
+        parseFloat($('#radius').val()) ||
+        default_radius;
+
+    if (
+        typeof o.project !== 'undefined' &&
+        o.project === default_project
+    ) {
+        delete o.project;
+    }
+
+    if (o.radius === default_radius) {
+        delete o.radius;
+    }
+
+    var a = [];
+
+    $.each(o, function(k, v) {
+
+        a.push(
+            k +
+            '=' +
+            encodeURIComponent(v)
+        );
+
+    });
+
+    var url =
+        '?' +
+        a.join('&') +
+        '#map';
+
+    $('#permalink')
+        .attr('href', url)
+        .show();
 }
 
-function setPermalink ( o ) {
-	o.autorun = 1 ;
-	o.radius = $('#radius').val() * 1 ;
-	if ( typeof o.project != 'undefined' && o.project == default_project ) delete o.project ;
-	if ( typeof o.radius != 'undefined' && o.radius == default_radius ) delete o.radius ;
-	var a = [] ;
-	$.each ( o , function ( k , v ) {
-		a.push ( k + "=" + encodeURIComponent ( v ) ) ;
-	} ) ;
-	var url = '?' + a.join('&') ;
-	url += '#interface-language=' + tt.language ;
-	$('#permalink').attr({href:url}).show() ;
+
+/*
+ * Main search
+ */
+
+function run() {
+
+    var q =
+        $('#item')
+            .val()
+            .replace(/\D/g, '');
+
+    if (q !== '') {
+
+        setPermalink({
+            item: q
+        });
+
+        showItemsAroundItem(q);
+        return;
+    }
+
+    var lang =
+        $('#lang')
+            .val()
+            .toLowerCase()
+            .replace(/[^a-z-]/g, '');
+
+    var project =
+        $('#project')
+            .val()
+            .toLowerCase()
+            .replace(/[^a-z]/g, '');
+
+    var page =
+        $('#page').val();
+
+    if (
+        lang !== '' &&
+        project !== '' &&
+        page !== ''
+    ) {
+
+        setPermalink({
+            lang: lang,
+            project: project,
+            page: page.replace(/ /g, '_')
+        });
+
+        showItemsAroundPage(
+            lang,
+            project,
+            page
+        );
+
+        return;
+    }
+
+    var lat =
+        $('#lat')
+            .val()
+            .replace(/[^-.0-9]/g, '');
+
+    var lon =
+        $('#lon')
+            .val()
+            .replace(/[^-.0-9]/g, '');
+
+    if (lat !== '' && lon !== '') {
+
+        setPermalink({
+            lat: lat,
+            lon: lon
+        });
+
+        showItemsAroundCoord(
+            lat,
+            lon
+        );
+
+        return;
+    }
+
+    alert(
+        'Please enter coordinates, a Wikidata item, or a Wikipedia article.'
+    );
 }
 
-function run () {
-	var q = $('#item').val().replace(/\D/g,'') ;
-	if ( q != '' ) {
-		setPermalink ( { item:q } ) ;
-		return showItemsAroundItem ( q ) ;
-	}
-	
-	var lang = $('#lang').val().toLowerCase().replace(/[^a-z-]/g,'') ;
-	var project = $('#project').val().toLowerCase().replace(/[^a-z]/g,'') ;
-	var page = $('#page').val() ;
-	if ( lang != '' && project != '' && page != '' ) {
-		setPermalink ( { lang:lang , project:project , page:page.replace(/ /g,'_') } ) ;
-		return showItemsAroundPage ( lang , project , page ) ;
-	}
 
-	var lat = $('#lat').val().replace(/[^-.0-9]/g,'') ;
-	var lon = $('#lon').val().replace(/[^-.0-9]/g,'') ;
-	if ( lat != '' && lon != '' ) {
-		setPermalink ( { lat:lat , lon:lon } ) ;
-		return showItemsAroundCoord ( lat , lon ) ;
-	}
-	
-	alert ( tt.t('nothing2work_with') ) ;
-}
+/*
+ * Start application
+ */
 
-$(document).ready ( function () {
-	tt = new ToolTranslation ( { debug:1 , tool: 'wikishootme' , fallback:'en' ,
-		callback:function() {
-			tt.addILdropdown ( $('#interface_language_wrapper') ) ;
-			$('body').show();
+$(document).ready(function() {
 
-			wd = new WikiData ;
-			wd.language = tt.language ;
-			$('#main_form').submit ( function ( e ) {
-				e.preventDefault() ;
-				run() ;
-				return false ;
-			} ) ;
-			$('#item').val ( getParameterByName('item').replace(/\D/g,'') ) ;
-			$('#lang').val ( getParameterByName('lang',getParameterByName('language')) ) ;
-			$('#project').val ( getParameterByName('project',default_project) ) ;
-			$('#page').val ( getParameterByName('page',getParameterByName('art')).replace(/_/g,' ') ) ;
-			$('#radius').val ( getParameterByName('radius',getParameterByName('distance',default_radius)) ) ;
-			getCoords() ;
-		} ,
-		onUpdateInterface : function () {
-			var s = window.location.hash ;
-			s = s.replace ( /\&{0,1}interface_language=.+$/ , '' ) ;
-			window.location.hash = s + '&interface_language=' + tt.language ;
-		}
-	} ) ;
-} ) ;
+    $('#radius').val(default_radius);
+
+    $('#project').val(default_project);
+
+    $('#main_form').on(
+        'submit',
+        function(e) {
+
+            e.preventDefault();
+
+            run();
+
+            return false;
+        }
+    );
+
+    $('#item').val(
+        getParameterByName('item')
+            .replace(/\D/g, '')
+    );
+
+    $('#lang').val(
+        getParameterByName(
+            'lang',
+            getParameterByName('language')
+        )
+    );
+
+    $('#project').val(
+        getParameterByName(
+            'project',
+            default_project
+        )
+    );
+
+    $('#page').val(
+        getParameterByName(
+            'page',
+            getParameterByName('art')
+        ).replace(/_/g, ' ')
+    );
+
+    $('#radius').val(
+        getParameterByName(
+            'radius',
+            getParameterByName(
+                'distance',
+                default_radius
+            )
+        )
+    );
+
+    getCoords();
+});
 
 </script>
-
-
 
 </body>
 </html>
