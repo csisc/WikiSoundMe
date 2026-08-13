@@ -1,6 +1,6 @@
 /**
- * WikidataImageLayer - Wikidata items that have an image (P18).
- * Loading is handled by WikidataNoImageLayer which distributes entries here.
+ * WikidataAudioLayer - Wikidata items that have an audio (P51).
+ * Loading is handled by WikidataNoAudioLayer which distributes entries here.
  */
 class WikidataImageLayer extends BaseLayer {
 	constructor() {
@@ -13,7 +13,7 @@ class WikidataImageLayer extends BaseLayer {
 			min_cluster_size: 10
 		});
 		this.supportsIncremental = true;
-		// Issue #52: items whose P18 image is tagged {{Thumbnail}} on Commons
+		// Issue #52: items whose P51 image is tagged {{Thumbnail}} on Commons
 		// are candidates for a real-photo upload — coloured orange.
 		this.colorThumbnailImage = '#FF9F1C';
 	}
