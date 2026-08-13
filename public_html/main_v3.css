@@ -3,21 +3,24 @@
 	left:0px;
 	top:0px;
 	right:0px;
-	border-bottom:1px solid black;
-	padding:2px;
+	border-bottom:1px solid #ccc;
+	background:#f8f9fa;
+	padding:3px 4px;
 	z-index:5;
+}
+#top nav {
+	min-height:0;
 }
 #map {
 	position:absolute;
 	left:0px;
-	top:5em;
+	top:2.6em;
 	bottom:0px;
 	right:0px;
 	z-index:2;
 }
 #busy {
 	display:none;
-	padding-top:5px;
 }
 #update {
 	display:none;
@@ -34,16 +37,6 @@
 }
 #flickr {
 	display:none;
-}
-#center_on_me {
-	font-size:20pt;
-	padding-top:3px;
-	padding-bottom:3px;
-}
-#search {
-	font-size:20pt;
-	padding-top:3px;
-	padding-bottom:3px;
 }
 #search_dialog {
 	display:none;
@@ -101,4 +94,121 @@ div.popup_section {
 	margin-top:3px;
 	padding:2px;
 	border-top:1px solid #DDD
+}
+
+/* --- User status icon --- */
+#user_status_icon {
+	padding:0 4px;
+	line-height:1;
+}
+#user_menu_item a {
+	text-decoration:none;
+	color:inherit;
+}
+#user_menu_item a:hover {
+	text-decoration:underline;
+}
+#logout_link {
+	color:#dc3545 !important;
+}
+
+/* --- Offline indicator --- */
+#offline_banner {
+	display:none;
+	position:fixed;
+	bottom:0;
+	left:0;
+	right:0;
+	background:#dc3545;
+	color:white;
+	text-align:center;
+	padding:6px;
+	font-size:13px;
+	z-index:9999;
+}
+#offline_banner.online_restored {
+	background:#28a745;
+}
+
+/* --- Mobile responsive --- */
+@media (max-width: 768px) {
+	/* Larger touch targets on mobile */
+	#top nav .btn {
+		min-width:40px;
+		min-height:40px;
+		padding:6px 10px;
+		font-size:16px;
+	}
+	#top nav .fa-lg {
+		font-size:20px;
+	}
+
+	/* Toolbar takes less vertical space */
+	#top {
+		padding:2px 3px;
+	}
+	#map {
+		top:3em;
+	}
+
+	/* Popups: wider and more readable */
+	.leaflet-popup-content-wrapper {
+		max-width:85vw !important;
+	}
+	.leaflet-popup-content {
+		font-size:14px;
+		margin:8px 10px;
+	}
+	.leaflet-popup-content img {
+		max-width:100% !important;
+		height:auto !important;
+	}
+
+	/* Upload button more prominent on mobile */
+	.btn-file {
+		font-size:16px;
+		padding:10px 16px;
+	}
+
+	/* Search results: larger tap targets */
+	li.sr_result {
+		padding:12px 10px;
+		font-size:14px;
+	}
+
+	/* Modals: near full-screen on mobile */
+	.modal-dialog {
+		margin:10px;
+		max-width:calc(100vw - 20px);
+	}
+	.modal-body {
+		max-height:70vh;
+		overflow-y:auto;
+	}
+
+	/* Coordinates text smaller on mobile to save space */
+	div.popup_coords {
+		font-size:9pt;
+	}
+
+	/* Geo error text */
+	#geo_error {
+		max-width:120px;
+		overflow:hidden;
+		text-overflow:ellipsis;
+	}
+}
+
+/* Dark mode map tile inversion */
+.dark-tiles .leaflet-tile-pane {
+	filter: invert(1) hue-rotate(180deg);
+}
+
+/* Very small screens (phones in portrait) */
+@media (max-width: 400px) {
+	#top nav .btn {
+		min-width:36px;
+		min-height:36px;
+		padding:4px 8px;
+	}
 }
