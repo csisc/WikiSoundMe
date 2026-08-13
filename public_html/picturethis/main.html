@@ -127,8 +127,8 @@
 						<div v-if='r.description!=""'><i class='text-muted'>{{r.description}}</i></div>
 					</div>
 					<div class='upload-cell'>
-						<div v-if='r.i.hasClaims("P18")'>
-							<img :src='getIconURL(r.i.getFirstStringForProperty("P18"))' />
+						<div v-if='r.i.hasClaims("P51")'>
+							<img :src='getIconURL(r.i.getFirstStringForProperty("P51"))' />
 						</div>
 						<div v-else-if='r.status=="uploaded"' class='upload-status-uploaded'>
 							<img :src='getIconURL(r.new_file_name)' />
