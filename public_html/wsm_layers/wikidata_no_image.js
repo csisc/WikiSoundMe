@@ -1,7 +1,7 @@
 /**
- * WikidataNoImageLayer - Wikidata items without an image.
+ * WikidataNoAudioLayer - Wikidata items without an audio.
  * Handles SPARQL loading for both Wikidata layers and distributes
- * entries to WikidataImageLayer or itself based on P18 presence.
+ * entries to WikidataImageLayer or itself based on P51 presence.
  */
 class WikidataNoImageLayer extends BaseLayer {
 	constructor() {
@@ -56,11 +56,11 @@ class WikidataNoImageLayer extends BaseLayer {
 		sparql += app.getP31SparqlFragment();
 		sparql += app.getDestroyedSparqlFragment();
 		sparql += ' OPTIONAL { ?q wdt:P31 ?p31type } ';
-		sparql += ' OPTIONAL { ?q wdt:P18 ?image } ';
+		sparql += ' OPTIONAL { ?q wdt:P51 ?image } ';
 		sparql += ' OPTIONAL { ?q wdt:P373 ?commonscat } ';
 		sparql += ' OPTIONAL { ?q wdt:P969 ?street } ';
 		sparql += ' OPTIONAL { ?q wdt:P131 ?admin } ';
-		if (app.check_reason_no_image) sparql += 'OPTIONAL { ?q p:P18 ?statement . ?statement pq:P828 ?reason } ';
+		if (app.check_reason_no_image) sparql += 'OPTIONAL { ?q p:P51 ?statement . ?statement pq:P828 ?reason } ';
 		const labelLangs = app.getLabelLanguageChain();
 		if (app.worldwide) {
 			sparql += ` OPTIONAL { ?q rdfs:label ?qLabel . FILTER(LANG(?qLabel) = "${app.language}") } OPTIONAL { ?q schema:description ?desc . FILTER(LANG(?desc) = "${app.language}") } OPTIONAL { ?p31type rdfs:label ?p31Label . FILTER(LANG(?p31Label) = "${app.language}") } OPTIONAL { ?admin rdfs:label ?adminLabel . FILTER(LANG(?adminLabel) = "${app.language}") } `;
@@ -144,7 +144,7 @@ class WikidataNoImageLayer extends BaseLayer {
 				me.pruneOutsideBbox(bbox);
 				if (imageLayer) imageLayer.pruneOutsideBbox(bbox);
 			}
-			// Issue #52: flag items whose P18 image uses {{Thumbnail}} on
+			// Issue #52: flag items whose P51 audio uses {{Thumbnail}} on
 			// Commons. Opt-in (#enrich=1) to avoid hammering Commons on
 			// every pan.
 			if (app.enrich_commons) me.flagThumbnailImages(app);
