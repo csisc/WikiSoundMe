@@ -1,4 +1,4 @@
-name: Jest Tests
+name: Test and Deploy GitHub Pages
 
 on:
   push:
@@ -7,8 +7,18 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
   test:
+    name: Run Jest
     runs-on: ubuntu-latest
 
     steps:
@@ -25,3 +35,30 @@ jobs:
 
       - name: Run Jest
         run: npx jest --runInBand
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: test
+    if: github.event_name != 'pull_request'
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
